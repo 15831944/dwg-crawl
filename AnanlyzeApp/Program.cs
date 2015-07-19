@@ -6,6 +6,8 @@ using MongoDB;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using System.Diagnostics;
+using Crawl;
+using Crawl.Geometry;
 
 namespace AnanlyzeApp
 {
@@ -13,7 +15,7 @@ namespace AnanlyzeApp
     {
         static void Main(string[] args)
         {   
-            NumberOfPrimitivesInBlocks();
+            Clusters();
             /*
             Stopwatch timer = Stopwatch.StartNew();
             LineData();
@@ -28,6 +30,38 @@ namespace AnanlyzeApp
             Console.ReadLine();
             */
         }
+
+        public static void Clusters()
+        {
+            // SqlDb sqlDB = new SqlDb(@"c:\Data\rectangle.sdf");
+            DbMongo sqlDB = new DbMongo("rectangles");
+            List<string> jsonOfLines = sqlDB.GetObjectJsonByClassName("AcDbLine");
+            List<Rectangle> rectangles = new List<Rectangle>();
+
+            int i = 0;
+            foreach (string jsonLine in jsonOfLines)
+            {
+                CdbLine cLine = JsonConvert.From<CdbLine>(jsonLine);
+                if (cLine.Length > 0)
+                {
+                    Rectangle rec = new Rectangle(cLine.StartPoint, cLine.EndPoint);
+                    rectangles.Add(rec);
+                    // DrawLine(cLine.StartPoint.X, cLine.StartPoint.Y, cLine.EndPoint.X, cLine.EndPoint.Y);
+                }
+                i++;
+            }
+
+            ClusterTree ct = new ClusterTree(rectangles.ToArray());
+
+            foreach (ClusterTree.Cluster cluster in ct.Clusters)
+            {
+                if (cluster.Count > 2)
+                    Console.WriteLine(cluster.BoundBox.ToString());
+                    // DrawRectangle(cluster.BoundBox.MinPoint.X, cluster.BoundBox.MinPoint.Y, cluster.BoundBox.MaxPoint.X, cluster.BoundBox.MaxPoint.Y);
+            }
+
+        }
+
 
         static void NumberOfPrimitivesInBlocks()
         {
@@ -145,6 +179,5 @@ namespace AnanlyzeApp
 
             return result;
         }
-
     }
 }

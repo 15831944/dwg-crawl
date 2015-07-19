@@ -6,10 +6,10 @@
     using System.Runtime.Serialization;
 
     [DataContract]
-    public class crawlPoint3d
+    public class CdbPoint3d
     {
         [DataMember]
-        string ClassName = "Point3D";
+        string ClassName;
 
         [DataMember]
         public double X;
@@ -18,18 +18,21 @@
         [DataMember]
         public double Z;
 
-        public crawlPoint3d()
+        public CdbPoint3d()
         {
             this.X = 0;
             this.Y = 0;
             this.Z = 0;
+            this.ClassName = "Point3D";
         }
 
-        public crawlPoint3d(double X, double Y, double Z)
+        public CdbPoint3d(double X, double Y, double Z)
         {
             this.X = X;
             this.Y = Y;
             this.Z = Z;
+
+            this.ClassName = "Point3D";
         }
 
         public override string ToString()
@@ -37,7 +40,7 @@
             return string.Format("({0}, {1}, {2})", Math.Round(this.X, 2), Math.Round(this.Y, 2), Math.Round(this.Z, 2));
         }
 
-        public bool Equals(crawlPoint3d otherPoint3d)
+        public bool Equals(CdbPoint3d otherPoint3d)
         {
             return this.ToString().Equals(otherPoint3d.ToString());
         }
@@ -48,11 +51,10 @@
     /// </summary>
     public class Rectangle
     {
+        public CdbPoint3d pointA;
+        public CdbPoint3d pointC;
 
-        public crawlPoint3d pointA;
-        public crawlPoint3d pointC;
-
-        public crawlPoint3d MinPoint
+        public CdbPoint3d MinPoint
         {
             get
             {
@@ -74,11 +76,11 @@
                 if (pointA.Z > pointC.Z)
                     return pointC;
                  */
-                return new crawlPoint3d(x,y,z);
+                return new CdbPoint3d(x,y,z);
             }
         }
 
-        public crawlPoint3d MaxPoint
+        public CdbPoint3d MaxPoint
         {
             get
             {
@@ -86,7 +88,7 @@
                 double y = Math.Max(pointA.Y, pointC.Y);
                 double z = Math.Max(pointA.Z, pointC.Z);
 
-                return new crawlPoint3d(x, y, z);
+                return new CdbPoint3d(x, y, z);
                 /*
                 if (pointA.X > pointC.X)
                     return pointA;
@@ -169,8 +171,8 @@
                 double y2;
                 TryParse(xyz[4], out y2);
 
-                this.pointA = new crawlPoint3d(x1, y1, 0);
-                this.pointC = new crawlPoint3d(x2, y2, 0);
+                this.pointA = new CdbPoint3d(x1, y1, 0);
+                this.pointC = new CdbPoint3d(x2, y2, 0);
             }
             catch
             {
@@ -180,11 +182,11 @@
 
         public Rectangle(double pointAx, double pointAy, double pointCx, double pointCy)
         {
-            this.pointA = new crawlPoint3d(pointAx, pointAy, 0);
-            this.pointC = new crawlPoint3d(pointCx, pointCy, 0);
+            this.pointA = new CdbPoint3d(pointAx, pointAy, 0);
+            this.pointC = new CdbPoint3d(pointCx, pointCy, 0);
         }
 
-        public Rectangle(crawlPoint3d bottomLeftCorner, crawlPoint3d topRightCorner)
+        public Rectangle(CdbPoint3d bottomLeftCorner, CdbPoint3d topRightCorner)
         {
             this.pointA = bottomLeftCorner;
             this.pointC = topRightCorner;
@@ -242,7 +244,7 @@
         /// </summary>
         /// <param name="pnt">Point to check</param>
         /// <returns>True if point at least on a border</returns>
-        public bool Includes(crawlPoint3d pnt)
+        public bool Includes(CdbPoint3d pnt)
         {
             if (this.MinPoint.X > pnt.X)
                 return false;
@@ -360,15 +362,15 @@
             {
                 this.HasIntersection = false;
 
-                this.pointA = new crawlPoint3d(minX, minY, 0);
-                this.pointC = new crawlPoint3d(maxX, maxY, 0);
+                this.pointA = new CdbPoint3d(minX, minY, 0);
+                this.pointC = new CdbPoint3d(maxX, maxY, 0);
 
                 this.IntersectionArea = this.Area;
             }
             else
             {
-                this.pointA = new crawlPoint3d(minX, minY, 0);
-                this.pointC = new crawlPoint3d(maxX, maxY, 0);
+                this.pointA = new CdbPoint3d(minX, minY, 0);
+                this.pointC = new CdbPoint3d(maxX, maxY, 0);
 
                 this.HasIntersection = true;
 
@@ -377,8 +379,8 @@
                 double minYi = Math.Max(this.Rectangle1.MinPoint.Y, this.Rectangle2.MinPoint.Y);
                 double maxYi = Math.Min(this.Rectangle1.MaxPoint.Y, this.Rectangle2.MaxPoint.Y);
 
-                crawlPoint3d intersectionA = new crawlPoint3d(minXi, minYi, 0);
-                crawlPoint3d intersectionC = new crawlPoint3d(maxXi, maxYi, 0);
+                CdbPoint3d intersectionA = new CdbPoint3d(minXi, minYi, 0);
+                CdbPoint3d intersectionC = new CdbPoint3d(maxXi, maxYi, 0);
             }
         }
         #endregion

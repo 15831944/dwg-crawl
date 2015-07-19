@@ -10,6 +10,8 @@
 
     public class DbMongo
     {
+        public string DataDir;
+
         private string DbName;
         private MongoClient ClientMongo;
         private MongoDatabase DatabaseMongo;
@@ -35,39 +37,41 @@
 
         private void Create()
         {
-            ClientMongo = new MongoClient();
-            DatabaseMongo = ClientMongo.GetServer().GetDatabase(this.DbName);
+            this.DataDir = @"c:\Data";
 
-            if (!DatabaseMongo.CollectionExists("files"))
-                DatabaseMongo.CreateCollection("files");
+            this.ClientMongo = new MongoClient();
+            this.DatabaseMongo = ClientMongo.GetServer().GetDatabase(this.DbName);
 
-            files = DatabaseMongo.GetCollection<BsonDocument>("files");
+            if (!this.DatabaseMongo.CollectionExists("files"))
+                this.DatabaseMongo.CreateCollection("files");
 
-            files.CreateIndex("FileId");
-            files.CreateIndex("BlockId");
-            files.CreateIndex("ClassName");
+            this.files = this.DatabaseMongo.GetCollection<BsonDocument>("files");
 
-            if (!DatabaseMongo.CollectionExists("objects"))
-                DatabaseMongo.CreateCollection("objects");
+            this.files.CreateIndex("FileId");
+            this.files.CreateIndex("BlockId");
+            this.files.CreateIndex("ClassName");
 
-            objects = DatabaseMongo.GetCollection<BsonDocument>("objects");
+            if (!this.DatabaseMongo.CollectionExists("objects"))
+                this.DatabaseMongo.CreateCollection("objects");
 
-            objects.CreateIndex("ClassName");
-            objects.CreateIndex("ObjectId");
-            objects.CreateIndex("FileId");
+            this.objects = this.DatabaseMongo.GetCollection<BsonDocument>("objects");
+
+            this.objects.CreateIndex("ClassName");
+            this.objects.CreateIndex("ObjectId");
+            this.objects.CreateIndex("FileId");
         }
 
         public void Clear()
         {
-            ClientMongo.GetServer().GetDatabase(DbName).DropCollection("objects");
-            ClientMongo.GetServer().GetDatabase(DbName).DropCollection("files");
+            this.ClientMongo.GetServer().GetDatabase(DbName).DropCollection("objects");
+            this.ClientMongo.GetServer().GetDatabase(DbName).DropCollection("files");
             //clientMongo.GetServer().GetDatabase(DbName).Drop();
         }
 
         public void Seed()
         {
             // Seed initial data
-            if (!DatabaseMongo.CollectionExists("objects"))
+            if (!this.DatabaseMongo.CollectionExists("objects"))
             {
                 // http://mongodb.github.io/mongo-csharp-driver/2.0/getting_started/quick_tour/
                 // Seed with object data
@@ -120,8 +124,6 @@
 
         public void InsertIntoFiles(string docJson)
         {
-            var files = DatabaseMongo.GetCollection<BsonDocument>("files");
-
             BsonDocument doc = BsonDocument.Parse(docJson);
             bool docIsAFile = doc["ClassName"].ToString() == "File";
 
@@ -134,16 +136,16 @@
                 filter.Add("Hash", hash);
                 filter.Add("ClassName", "File");
 
-                var qryResult = files.Find(filter);
+                var qryResult = this.files.Find(filter);
                 // if hash exist - we should skip insertion
                 if (qryResult.Count() == 0)
                     // Check hash already exists, if no - insert
-                    files.Insert(doc);
+                    this.files.Insert(doc);
             }
             else
             {
                 doc["Scanned"] = true;
-                files.Insert(doc);
+                this.files.Insert(doc);
             }
         }
 
@@ -156,7 +158,7 @@
             // if hash exist - we should skip insertion
             if (qryResult == null)
                 // Check hash already exists, if no - insert
-                files.Insert(doc);
+                this.files.Insert(doc);
         }
 
         public void SaveObjectData(string objJson, string fileId)
@@ -166,7 +168,7 @@
             {
                 BsonDocument doc = BsonDocument.Parse(objJson);
                 doc.Add("FileId", fileId);
-                objects.Insert(doc);
+                this.objects.Insert(doc);
             }
             catch (System.Exception e)
             {
@@ -213,12 +215,11 @@
         {
             List<CrawlDocument> resultList = new List<CrawlDocument>();
 
-            var files = DatabaseMongo.GetCollection<BsonDocument>("files");
             QueryDocument filter = new QueryDocument();
             filter.Add("FileId", fileId);
             filter.Add("ClassName", "File");
 
-            var allFiles = files.Find(filter);
+            var allFiles = this.files.Find(filter);
 
             foreach (BsonDocument file in allFiles)
             {
@@ -236,10 +237,9 @@
 
         public void SetDocumentScanned(string fileId)
         {
-            var files = DatabaseMongo.GetCollection<BsonDocument>("files");
             var filter = new QueryDocument("FileId", fileId);
             var update = MongoDB.Driver.Builders.Update.Set("Scanned", true);
-            var result = files.Update(filter, update);
+            var result = this.files.Update(filter, update);
         }
 
         public List<string> GetObjectJsonByClassName(string className)
@@ -248,13 +248,13 @@
             if (!string.IsNullOrEmpty(className))
             {
                 QueryDocument filter = new QueryDocument("ClassName", className);
-                var objJsons = DatabaseMongo.GetCollection("objects").Find(filter);
+                var objJsons = this.objects.Find(filter);
                 foreach (var anObject in objJsons)
                     result.Add(anObject.ToString());
             }
             else
             {
-                var objJsons = DatabaseMongo.GetCollection("objects").FindAll();
+                var objJsons = this.objects.FindAll();
                 foreach (var anObject in objJsons)
                     result.Add(anObject.ToString());
             }
@@ -265,23 +265,23 @@
         public bool HasFileId(string FileId)
         {
             QueryDocument filter = new QueryDocument("FileId", FileId);
-            var files = DatabaseMongo.GetCollection("files").Find(filter);
+            var filterFiles = this.files.Find(filter);
 
-            return files.Count() > 0;
+            return filterFiles.Count() > 0;
         }
 
         public bool HasFileHash(string FileHash)
         {
             QueryDocument filter = new QueryDocument("Hash", FileHash);
-            var files = DatabaseMongo.GetCollection("files").Find(filter);
+            var filterFiles = this.files.Find(filter);
 
-            return files.Count() > 0;
+            return filterFiles.Count() > 0;
         }
 
         public bool HasObject(string objectId)
         {
             QueryDocument filter = new QueryDocument("ObjectId", objectId);
-            var objJsons = DatabaseMongo.GetCollection("objects").Find(filter);
+            var objJsons = this.objects.Find(filter);
 
             return objJsons.Count() > 0;
         }
@@ -293,7 +293,7 @@
         public List<string> GetRectanglesFromLines()
         {
             QueryDocument filter = new QueryDocument("ClassName", "AcDbLine");
-            var objJsons = objects.Find(filter).SetLimit(100000);
+            var objJsons = this.objects.Find(filter).SetLimit(100000);
 
             List<string> rects = new List<string>();
 

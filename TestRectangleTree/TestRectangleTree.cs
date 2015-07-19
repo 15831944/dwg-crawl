@@ -16,13 +16,13 @@
             rt = new RectangleTree();
             rectangles = new Rectangle[7];
 
-            rectangles[0] = new Rectangle(new crawlPoint3d(0, 0, 0), new crawlPoint3d(100, 100, 0));
-            rectangles[1] = new Rectangle(new crawlPoint3d(50, 50, 0), new crawlPoint3d(350, 150, 0));
-            rectangles[2] = new Rectangle(new crawlPoint3d(550, 250, 0), new crawlPoint3d(650, 350, 0));
-            rectangles[3] = new Rectangle(new crawlPoint3d(575, 275, 0), new crawlPoint3d(625, 325, 0));
-            rectangles[4] = new Rectangle(new crawlPoint3d(750, 50, 0), new crawlPoint3d(850, 150, 0));
-            rectangles[5] = new Rectangle(new crawlPoint3d(750, 150, 0), new crawlPoint3d(850, 250, 0));
-            rectangles[6] = new Rectangle(new crawlPoint3d(800, 100, 0), new crawlPoint3d(900, 200, 0));
+            rectangles[0] = new Rectangle(new CdbPoint3d(0, 0, 0), new CdbPoint3d(100, 100, 0));
+            rectangles[1] = new Rectangle(new CdbPoint3d(50, 50, 0), new CdbPoint3d(350, 150, 0));
+            rectangles[2] = new Rectangle(new CdbPoint3d(550, 250, 0), new CdbPoint3d(650, 350, 0));
+            rectangles[3] = new Rectangle(new CdbPoint3d(575, 275, 0), new CdbPoint3d(625, 325, 0));
+            rectangles[4] = new Rectangle(new CdbPoint3d(750, 50, 0), new CdbPoint3d(850, 150, 0));
+            rectangles[5] = new Rectangle(new CdbPoint3d(750, 150, 0), new CdbPoint3d(850, 250, 0));
+            rectangles[6] = new Rectangle(new CdbPoint3d(800, 100, 0), new CdbPoint3d(900, 200, 0));
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@
         [TestMethod]
         public void TestSearchIntersectionsTime()
         {
-            Rectangle searchedArea = new Rectangle(new crawlPoint3d(0, 0, 0), new crawlPoint3d(350, 150, 0));
+            Rectangle searchedArea = new Rectangle(new CdbPoint3d(0, 0, 0), new CdbPoint3d(350, 150, 0));
 
             for (int i = 0; i < rectangles.Length; i++)
                 rt.Add(rectangles[i]);
@@ -54,7 +54,7 @@
         [TestMethod]
         public void TestSearchIntersectionResultSimple()
         {
-            Rectangle searchedArea = new Rectangle(new crawlPoint3d(0, 0, 0), new crawlPoint3d(350, 150, 0));
+            Rectangle searchedArea = new Rectangle(new CdbPoint3d(0, 0, 0), new CdbPoint3d(350, 150, 0));
 
             for (int i = 0; i < rectangles.Length; i++)
                 rt.Add(rectangles[i]);
@@ -152,7 +152,7 @@
         [TestMethod]
         public void TestSearchResultAndTimeMedium()
         {
-            Rectangle searchedArea = new Rectangle(new crawlPoint3d(-24, -34, 0), new crawlPoint3d(401, 74, 0));
+            Rectangle searchedArea = new Rectangle(new CdbPoint3d(-24, -34, 0), new CdbPoint3d(401, 74, 0));
 
             DbMongo sqlDB = new DbMongo("rectangles");
             List<string> coords = sqlDB.GetRectanglesFromLines();
@@ -173,9 +173,9 @@
             int grade = 0;
             foreach (var rect in result)
             {
-                if (rect.pointA.Equals(new crawlPoint3d(0, 0, 0)) && rect.pointC.Equals(new crawlPoint3d(100, 0, 0)))
+                if (rect.pointA.Equals(new CdbPoint3d(0, 0, 0)) && rect.pointC.Equals(new CdbPoint3d(100, 0, 0)))
                     grade++;
-                if (rect.pointA.Equals(new crawlPoint3d(50, 50, 0)) && rect.pointC.Equals(new crawlPoint3d(350, 50, 0)))
+                if (rect.pointA.Equals(new CdbPoint3d(50, 50, 0)) && rect.pointC.Equals(new CdbPoint3d(350, 50, 0)))
                     grade++;
             }
 
@@ -185,7 +185,7 @@
         [TestMethod]
         public void TestSearchResultAndTimeLarge()
         {
-            Rectangle searchedArea = new Rectangle(new crawlPoint3d(115184, 29374, 0), new crawlPoint3d(133962, 35634, 0));
+            Rectangle searchedArea = new Rectangle(new CdbPoint3d(115184, 29374, 0), new CdbPoint3d(133962, 35634, 0));
 
             DbMongo sqlDB = new DbMongo("SingleFile");
             List<string> recsCoords = sqlDB.GetRectanglesFromLines();
@@ -195,8 +195,8 @@
             foreach (string coords in recsCoords)
             {
                 Rectangle rec = new Rectangle(coords);
-                crawlPoint3d pntA = rec.pointA;
-                crawlPoint3d pntC = rec.pointC;
+                CdbPoint3d pntA = rec.pointA;
+                CdbPoint3d pntC = rec.pointC;
 
                 rt.Add(rec);
 

@@ -47,23 +47,12 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SqlServerCe, Version=3.5.1.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel.Web" />
-    <Reference Include="System.Web.Services" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="multiContent\cDebug.cs" />
-    <Compile Include="multiContent\cJson.cs" />
-    <Compile Include="multiContent\Commands.cs" />
-    <Compile Include="multiContent\crawlAcDbDocument.cs" />
-    <Compile Include="multiContent\Wrappers.cs" />
+    <Compile Include="Match.cs" />
+    <Compile Include="cDebug.cs" />
+    <Compile Include="Commands.cs" />
+    <Compile Include="CdbDocument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

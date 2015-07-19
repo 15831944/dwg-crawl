@@ -58,6 +58,10 @@
       <Project>{eebc657a-08ae-4c9a-9242-c1d1649ed884}</Project>
       <Name>DatabaseMongo</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RectangleTree\RectangleTree.csproj">
+      <Project>{90909af6-627e-4720-b900-579a9afb21a9}</Project>
+      <Name>RectangleTree</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

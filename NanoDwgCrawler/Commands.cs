@@ -2,8 +2,6 @@
 using Teigha.Runtime;
 using HostMgd.ApplicationServices;
 using System.IO;
-using System.Windows.Forms;
-using System.Data.SqlServerCe;
 using Teigha.DatabaseServices;
 using Teigha.Geometry;
 
@@ -21,6 +19,7 @@ using Polyline3d = Teigha.DatabaseServices.Polyline3d;
 
 using TeighaApp = HostMgd.ApplicationServices.Application;
 using System.Collections.Generic;
+using Crawl.Geometry;
 
 
 public class App : IExtensionApplication
@@ -70,7 +69,7 @@ namespace Crawl
             CrawlDocument crawlDoc = sqlDB.GetNewRandomUnscannedDocument();
             while (crawlDoc != null)
             {
-                crawlAcDbDocument cDoc = new crawlAcDbDocument(crawlDoc);
+                CdbDocument cDoc = new CdbDocument(crawlDoc);
                 cDoc.sqlDB = sqlDB;
                 cDoc.ScanDocument();
                 crawlDoc = sqlDB.GetNewRandomUnscannedDocument();
@@ -91,7 +90,7 @@ namespace Crawl
             int i = 0;
             foreach (string jsonLine in jsonOfLines)
             {
-                crawlAcDbLine cLine = jsonHelper.From<crawlAcDbLine>(jsonLine);
+                CdbLine cLine = JsonConvert.From<CdbLine>(jsonLine);
                 if (cLine.Length > 0)
                 {
                     Rectangle rec = new Rectangle(cLine.StartPoint, cLine.EndPoint);
