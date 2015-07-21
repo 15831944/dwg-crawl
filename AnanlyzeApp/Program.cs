@@ -15,7 +15,7 @@ namespace AnanlyzeApp
     {
         static void Main(string[] args)
         {   
-            Clusters();
+            SingleFileClusters();
             /*
             Stopwatch timer = Stopwatch.StartNew();
             LineData();
@@ -31,7 +31,52 @@ namespace AnanlyzeApp
             */
         }
 
-        public static void Clusters()
+        static void SingleFileClusters()
+        {
+            DbMongo sqlDB = new DbMongo("SingleFile");
+            List<Rectangle> rects = new List<Rectangle>();
+            List<string> coords = sqlDB.GetRectanglesFromLines();
+            foreach (string coord in coords)
+                rects.Add(new Rectangle(coord));
+
+            Stopwatch timer = Stopwatch.StartNew();
+            ClusterTree ct = new ClusterTree(rects.ToArray());
+            timer.Stop();
+
+            Console.WriteLine("Analyze CT: {0}, {1}",timer.ElapsedMilliseconds,3*rects.Count);
+            Console.ReadKey();
+            for (int i = 0; i < ct.Clusters.Count; i++)
+            {
+                Console.WriteLine("Cluster {0}: {1}",i,ct.Clusters[i].BoundBox);
+
+                for (int j = 0; j < ct.Clusters.Count; j++)
+                {
+                    Rectangle rec1 = ct.Clusters[i].BoundBox;
+                    Rectangle rec2 = ct.Clusters[j].BoundBox;
+
+                    if (rec1.Equals(rec2))
+                        continue;
+
+                    Rectangle notRound1 = new Rectangle(9571.0563, 11257.8221, 12095.1892, 13879.5525);
+                    Rectangle notRound2 = new Rectangle(6559.4258, 4018.8264, 16465.4917, 13169.6058);
+
+                    if (Math.Round(rec1.MinPoint.X, 0) == 3704)
+                    {
+                        //throw new System.ExecutionEngineException();
+
+                        if (Math.Round(rec2.MinPoint.X, 0) == 9571)
+                            Console.WriteLine("Here we should intersect");
+                    }
+
+                    if (rec1.Intersects(rec2))
+                        Console.WriteLine("There's an interesection between clusters");
+                }
+            }
+
+            Console.ReadLine();
+        }
+
+        static void Clusters()
         {
             // SqlDb sqlDB = new SqlDb(@"c:\Data\rectangle.sdf");
             DbMongo sqlDB = new DbMongo("rectangles");
@@ -42,7 +87,7 @@ namespace AnanlyzeApp
             foreach (string jsonLine in jsonOfLines)
             {
                 CdbLine cLine = JsonConvert.From<CdbLine>(jsonLine);
-                if (cLine.Length > 0)
+                if (cLine.Length > 10)
                 {
                     Rectangle rec = new Rectangle(cLine.StartPoint, cLine.EndPoint);
                     rectangles.Add(rec);
@@ -60,8 +105,8 @@ namespace AnanlyzeApp
                     // DrawRectangle(cluster.BoundBox.MinPoint.X, cluster.BoundBox.MinPoint.Y, cluster.BoundBox.MaxPoint.X, cluster.BoundBox.MaxPoint.Y);
             }
 
+            Console.ReadLine();
         }
-
 
         static void NumberOfPrimitivesInBlocks()
         {

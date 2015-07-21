@@ -248,7 +248,9 @@
             if (!string.IsNullOrEmpty(className))
             {
                 QueryDocument filter = new QueryDocument("ClassName", className);
-                var objJsons = this.objects.Find(filter);
+
+                // http://stackoverflow.com/questions/8448179/mongodb-include-or-exclude-certain-elements-with-c-sharp-driver
+                var objJsons = this.objects.Find(filter).SetFields(Fields.Exclude("_id"));
                 foreach (var anObject in objJsons)
                     result.Add(anObject.ToString());
             }
